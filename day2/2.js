@@ -11,7 +11,7 @@ const getProgram = (nums, noun, verb) => {
   program[2] = verb;
 
   let i = 0;
-  while (program[i] === 1 || program[i] === 2) {
+  while (program[i] !== 99) {
     const val1 = program[program[i + 1]];
     const val2 = program[program[i + 2]];
     const output = program[i + 3];

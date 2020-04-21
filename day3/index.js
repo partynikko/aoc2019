@@ -1,40 +1,41 @@
-const { getInput } = require("../helpers");
 const { performance } = require("perf_hooks");
-
+const { getInput } = require("../helpers");
 const start = performance.now();
+
 const wires = getInput(__dirname)
   .split("\n")
   .map(w => w.split(","));
 
 const addV = v => dir => val => {
-  if (dir === "U") {
-    return [v[0], v[1] + val];
-  } else if (dir === "D") {
-    return [v[0], v[1] - val];
-  } else if (dir === "R") {
-    return [v[0] + val, v[1]];
-  } else if (dir === "L") {
-    return [v[0] - val, v[1]];
+  switch (dir) {
+    case "U":
+      return [v[0], v[1] + val];
+    case "D":
+      return [v[0], v[1] - val];
+    case "R":
+      return [v[0] + val, v[1]];
+    case "L":
+      return [v[0] - val, v[1]];
   }
 };
 
-const sets = [];
+const sets = wires.map(wire => {
+  const coordinates = wire
+    .reduce(
+      (coords, step) => {
+        const pos = coords[coords.length - 1];
+        const dir = step[0];
+        const add = addV(pos)(dir);
+        const num = Number(step.slice(1));
+        return [...coords, ...new Array(num).fill().map((_, i) => add(i + 1))];
+      },
+      [[0, 0]]
+    )
+    .slice(1)
+    .map(String);
 
-for (wire of wires) {
-  const set = new Set();
-  let pos = [0, 0];
-  for (step of wire) {
-    const [dir] = step;
-    const add = addV(pos)(dir);
-    const num = Number(step.slice(1));
-    for (let i = 1; i <= num; i++) {
-      const coord = add(i);
-      set.add(String(coord));
-    }
-    pos = add(num);
-  }
-  sets.push(set);
-}
+  return new Set(coordinates);
+});
 
 const lists = sets.map(set => Array.from(set));
 const intersections = lists[0].filter(coord => sets[1].has(coord));

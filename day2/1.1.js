@@ -7,6 +7,10 @@ const program = getInput(__dirname)
 program[1] = 12;
 program[2] = 2;
 
+const test = program
+console.log(test)
+
+
 let i = 0;
 while (program[i] !== 99) {
   const val1 = program[program[i + 1]];
